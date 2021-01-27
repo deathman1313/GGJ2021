@@ -2,12 +2,33 @@
 
 
 #include "PlayerCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	BaseTurnRate = 25;
+	BaseLookRate = 45;
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
+	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
 
 }
 
@@ -39,42 +60,24 @@ void APlayerCharacter::MoveForward(float Value)
 {
 	if (Controller != NULL && Value != 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Forward"));
+		AddMovementInput(GetActorForwardVector(), Value);
 	}
 }
 
 void APlayerCharacter::Turn(float Value)
 {
-	if (Value > 0)
+	if (Controller != NULL && Value != 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TurnRight"));
-	}
-	else if (Value < 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TurnLeft"));
+		AddActorLocalRotation(FRotator(0.0f, Value, 0.0f) * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
 void APlayerCharacter::LookUpAtRate(float Value)
 {
-	if (Value > 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("LookUp"));
-	}
-	else if (Value < 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("LookDown"));
-	}
+	AddControllerPitchInput(-Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::LookAroundAtRate(float Value)
 {
-	if (Value > 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("LookRight"));
-	}
-	else if (Value < 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("LookLeft"));
-	}
+	AddControllerYawInput(Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
 }

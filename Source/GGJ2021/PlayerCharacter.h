@@ -11,6 +11,9 @@ class GGJ2021_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
@@ -25,7 +28,7 @@ public:
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	float BaseLookUpRate;
+	float BaseLookRate;
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,6 +41,7 @@ protected:
 	void LookUpAtRate(float Value);
 
 	void LookAroundAtRate(float Value);
+
 
 public:	
 	// Called every frame
