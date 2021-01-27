@@ -37,13 +37,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::MoveForward(float Value)
 {
-	if (Value > 0)
+	if (Controller != NULL && Value != 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Forward"));
-	}
-	else if (Value < 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Backwards"));
 	}
 }
 
