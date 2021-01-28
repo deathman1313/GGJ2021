@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SceneComponent.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -15,6 +16,8 @@ APlayerCharacter::APlayerCharacter()
 
 	BaseTurnRate = 25;
 	BaseLookRate = 45;
+	BaseLookRightRange = 25;
+	BaseLookUpRange = 10;
 
 	bUseControllerRotationPitch = true;
 	bUseControllerRotationYaw = true;
@@ -25,7 +28,6 @@ APlayerCharacter::APlayerCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 0; // The camera follows at this distance behind the character	
-	//CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	Test = CreateDefaultSubobject<USceneComponent>(TEXT("Test"));
 	Test->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -73,20 +75,18 @@ void APlayerCharacter::Turn(float Value)
 {
 	if (Controller != NULL && Value != 0)
 	{
-		//AddActorLocalRotation(FRotator(0.0f, Value, 0.0f) * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 		AddControllerYawInput(Value * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
 void APlayerCharacter::LookUpAtRate(float Value)
 {
-	//AddControllerPitchInput(-Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
-	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds()), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
+	float Pitch = FollowCamera->GetRelativeRotation().Pitch + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	FollowCamera->SetRelativeRotation(FRotator(FMath::Clamp(Pitch, -BaseLookUpRange, BaseLookUpRange), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
 }
 
 void APlayerCharacter::LookAroundAtRate(float Value)
 {
-	//AddControllerYawInput(Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
-	//FollowCamera->SetRelativeRotation(FRotator(0.0f, Value, 0.0f) * BaseLookRate * GetWorld()->GetDeltaSeconds());
-	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch, FollowCamera->GetRelativeRotation().Yaw + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds()), 0.0f));
+	float Yaw = FollowCamera->GetRelativeRotation().Yaw + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch, FMath::Clamp(Yaw, -BaseLookRightRange, BaseLookRightRange), 0.0f));
 }
