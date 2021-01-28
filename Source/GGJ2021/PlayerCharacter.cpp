@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SceneComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -15,8 +16,8 @@ APlayerCharacter::APlayerCharacter()
 	BaseTurnRate = 25;
 	BaseLookRate = 45;
 
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = true;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -24,10 +25,13 @@ APlayerCharacter::APlayerCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 0; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	//CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	Test = CreateDefaultSubobject<USceneComponent>(TEXT("Test"));
+	Test->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->SetupAttachment(Test);
 	FollowCamera->bUsePawnControlRotation = false;
 
 }
@@ -69,16 +73,20 @@ void APlayerCharacter::Turn(float Value)
 {
 	if (Controller != NULL && Value != 0)
 	{
-		AddActorLocalRotation(FRotator(0.0f, Value, 0.0f) * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		//AddActorLocalRotation(FRotator(0.0f, Value, 0.0f) * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		AddControllerYawInput(Value * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
 void APlayerCharacter::LookUpAtRate(float Value)
 {
-	AddControllerPitchInput(-Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	//AddControllerPitchInput(-Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds()), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
 }
 
 void APlayerCharacter::LookAroundAtRate(float Value)
 {
-	AddControllerYawInput(Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	//AddControllerYawInput(Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	//FollowCamera->SetRelativeRotation(FRotator(0.0f, Value, 0.0f) * BaseLookRate * GetWorld()->GetDeltaSeconds());
+	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch, FollowCamera->GetRelativeRotation().Yaw + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds()), 0.0f));
 }
