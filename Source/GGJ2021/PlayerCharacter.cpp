@@ -16,8 +16,9 @@ APlayerCharacter::APlayerCharacter()
 
 	BaseTurnRate = 25;
 	BaseLookRate = 45;
-	BaseLookRightRange = 25;
-	BaseLookUpRange = 10;
+	BaseLookSideRange = 30;
+	BaseLookUpRange = 20;
+	BaseLookDownRange = 10;
 
 	bUseControllerRotationPitch = true;
 	bUseControllerRotationYaw = true;
@@ -82,11 +83,11 @@ void APlayerCharacter::Turn(float Value)
 void APlayerCharacter::LookUpAtRate(float Value)
 {
 	float Pitch = FollowCamera->GetRelativeRotation().Pitch + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
-	FollowCamera->SetRelativeRotation(FRotator(FMath::Clamp(Pitch, -BaseLookUpRange, BaseLookUpRange), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
+	FollowCamera->SetRelativeRotation(FRotator(FMath::Clamp(Pitch, BaseLookDownRange, BaseLookUpRange), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
 }
 
 void APlayerCharacter::LookAroundAtRate(float Value)
 {
 	float Yaw = FollowCamera->GetRelativeRotation().Yaw + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
-	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch, FMath::Clamp(Yaw, -BaseLookRightRange, BaseLookRightRange), 0.0f));
+	FollowCamera->SetRelativeRotation(FRotator(FollowCamera->GetRelativeRotation().Pitch, FMath::Clamp(Yaw, -BaseLookSideRange, BaseLookSideRange), 0.0f));
 }

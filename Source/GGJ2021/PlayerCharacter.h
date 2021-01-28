@@ -33,11 +33,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float BaseLookUpRange;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera)
-	float BaseLookRightRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float BaseLookDownRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float BaseLookSideRange;
 
 protected:
 	// Called when the game starts or when spawned
