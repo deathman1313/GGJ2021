@@ -17,8 +17,7 @@ APlayerCharacter::APlayerCharacter()
 	BaseTurnRate = 25;
 	BaseLookRate = 45;
 	BaseLookSideRange = 30;
-	BaseLookUpRange = 20;
-	BaseLookDownRange = 10;
+	BaseLookUpRange = 30;
 
 	bUseControllerRotationPitch = true;
 	bUseControllerRotationYaw = true;
@@ -26,8 +25,11 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
+	Robot = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	Robot->SetupAttachment(RootComponent);
+
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetupAttachment(Robot, FName("Head"));
 	CameraBoom->TargetArmLength = 0; // The camera follows at this distance behind the character	
 
 	Test = CreateDefaultSubobject<USceneComponent>(TEXT("Test"));
@@ -83,7 +85,7 @@ void APlayerCharacter::Turn(float Value)
 void APlayerCharacter::LookUpAtRate(float Value)
 {
 	float Pitch = FollowCamera->GetRelativeRotation().Pitch + (Value * BaseLookRate * GetWorld()->GetDeltaSeconds());
-	FollowCamera->SetRelativeRotation(FRotator(FMath::Clamp(Pitch, BaseLookDownRange, BaseLookUpRange), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
+	FollowCamera->SetRelativeRotation(FRotator(FMath::Clamp(Pitch, -BaseLookUpRange, BaseLookUpRange), FollowCamera->GetRelativeRotation().Yaw, 0.0f));
 }
 
 void APlayerCharacter::LookAroundAtRate(float Value)

@@ -12,6 +12,9 @@ class GGJ2021_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* Robot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
 	/** Follow camera */
@@ -35,9 +38,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float BaseLookUpRange;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	float BaseLookDownRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float BaseLookSideRange;
